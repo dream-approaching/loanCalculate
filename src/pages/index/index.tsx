@@ -1,46 +1,183 @@
-import React, { useCallback } from "react";
-import { View, Text, Button, Image } from "@tarojs/components";
-import { useEnv, useNavigationBar, useModal, useToast } from "taro-hooks";
-import logo from "./hook.png";
-
-import './index.less'
+import React, { useState, useRef, useEffect } from 'react';
+import Taro from '@tarojs/taro';
+import { View, Text, Button, Form, Input } from '@tarojs/components';
+import type { CommonEvent } from '@tarojs/components/types/common';
+import type { FormProps } from '@tarojs/components/types/Form';
+import { ListItem, SwitchTab, InputWithAddonAfter } from '../../components';
+import './index.less';
 
 const Index = () => {
-  const env = useEnv();
-  const [_, { setTitle }] = useNavigationBar({ title: "Taro Hooks" });
-  const [show] = useModal({
-    title: "Taro Hooks!",
-    showCancel: false,
-    confirmColor: "#8c2de9",
-    confirmText: "支持一下",
-    mask: true,
-  });
-  const [showToast] = useToast({ mask: true });
+  const loanTabList = ['商业贷款', '公积金贷款', '组合贷款'];
+  const [activeLoanTab, setActiveLoanTab] = useState(0);
 
-  const handleModal = useCallback(() => {
-    show({ content: "不如给一个star⭐️!" }).then(() => {
-      showToast({ title: "点击了支持!" });
+  const handleClickTab = (index: number) => {
+    setActiveLoanTab(index);
+  };
+
+  // 利率方式
+  const [randomKey, setRandomKey] = useState(Math.random());
+  const [rateType, setRateType] = useState(0);
+  const handleChangeRateType = (index: number) => {
+    setRateType(index);
+    setRandomKey(Math.random());
+  };
+
+  // 贷款方式
+  const [loanType, setLoanType] = useState(0);
+  const handleChangeLoanType = (index: number) => {
+    setLoanType(index);
+  };
+
+  // 跳转到结果页面 将参数传到结果页面
+  const handleSubmit = (e: CommonEvent<FormProps.onSubmitEventDetail>) => {
+    const { loanMoney, loanYear, lpr, addPoint, businessRate, multiple } = e.detail.value || {};
+
+    if (activeLoanTab === 0) {
+      if (!loanMoney) {
+        return Taro.showToast({ title: '请输入贷款金额', icon: 'none' });
+      } else if (!loanYear) {
+        return Taro.showToast({ title: '请输入贷款年限', icon: 'none' });
+      } else if ((rateType === 0 && !lpr) || (rateType === 1 && !businessRate)) {
+        return Taro.showToast({ title: '请输入贷款利率', icon: 'none' });
+      }
+    }
+
+    if (activeLoanTab === 1) {
+      if (!loanMoney) {
+        return Taro.showToast({ title: '请输入贷款金额', icon: 'none' });
+      } else if (!loanYear) {
+        return Taro.showToast({ title: '请输入贷款年限', icon: 'none' });
+      } else if (!businessRate) {
+        return Taro.showToast({ title: '请输入贷款利率', icon: 'none' });
+      }
+    }
+
+    if (activeLoanTab === 2) {
+      const { loanMoney1, businessRate1 } = e.detail.value || {};
+      if (!loanMoney1) {
+        return Taro.showToast({ title: '请输入公积金贷款金额', icon: 'none' });
+      } else if (!businessRate1) {
+        return Taro.showToast({ title: '请输入公积金贷款利率', icon: 'none' });
+      } else if (!loanMoney) {
+        return Taro.showToast({ title: '请输入商业贷款金额', icon: 'none' });
+      } else if (!loanYear) {
+        return Taro.showToast({ title: '请输入贷款年限', icon: 'none' });
+      } else if ((rateType === 0 && !lpr) || (rateType === 1 && !businessRate)) {
+        return Taro.showToast({ title: '请输入商业贷款利率', icon: 'none' });
+      }
+
+      const loanRate = rateType === 0 ? (+lpr + addPoint / 100).toFixed(2) : (businessRate * multiple).toFixed(2);
+      return Taro.navigateTo({
+        url: `/pages/result/index?loanType=${loanType}&loanYear=${loanYear}&loanRate=${loanRate}&loanMoney=${loanMoney * 10000}&loanMoney1=${
+          loanMoney1 * 10000
+        }&businessRate1=${businessRate1}`,
+      });
+    }
+
+    let loanRate;
+    if (activeLoanTab === 1) {
+      loanRate = businessRate;
+    } else {
+      loanRate = rateType === 0 ? (+lpr + addPoint / 100).toFixed(2) : (businessRate * multiple).toFixed(2);
+    }
+    Taro.navigateTo({
+      url: `/pages/result/index?loanType=${loanType}&loanYear=${loanYear}&loanRate=${loanRate}&loanMoney=${loanMoney * 10000}`,
     });
-  }, [show, showToast]);
+  };
 
   return (
     <View className="wrapper">
-      <Image className="logo" src={logo} />
-      <Text className="title">为Taro而设计的Hooks Library</Text>
-      <Text className="desc">
-        目前覆盖70%官方API. 抹平部分API在H5端短板. 提供近40+Hooks!
-        并结合ahook适配Taro!
-      </Text>
-      <View className="list">
-        <Text className="label">运行环境</Text>
-        <Text className="note">{env}</Text>
+      <View className="tabCon">
+        <SwitchTab tabList={loanTabList} active={activeLoanTab} onClick={handleClickTab} />
       </View>
-      <Button className="button" onClick={() => setTitle("Taro Hooks Nice!")}>
-        设置标题
-      </Button>
-      <Button className="button" onClick={handleModal}>
-        使用Modal
-      </Button>
+      {activeLoanTab !== 2 && (
+        <Form onSubmit={handleSubmit} className="formCon">
+          <ListItem label="贷款金额（万元）">
+            <InputWithAddonAfter focus name="loanMoney" type="digit" maxlength={15} addonText="万元" />
+          </ListItem>
+          <ListItem label="贷款年限（年）">
+            <InputWithAddonAfter name="loanYear" type="digit" maxlength={10} addonText="年" />
+          </ListItem>
+          {activeLoanTab !== 1 && (
+            <ListItem label="利率方式">
+              <SwitchTab tabList={['LPR', '基准利率']} size="small" active={rateType} onClick={handleChangeRateType} />
+            </ListItem>
+          )}
+          {activeLoanTab === 1 ? (
+            <ListItem label="公积金贷款利率（%）">
+              <InputWithAddonAfter name="businessRate" type="digit" maxlength={10} addonText="%" initialValue="3.25" />
+            </ListItem>
+          ) : rateType === 0 ? (
+            <View key={randomKey}>
+              <ListItem label="LPR（%）">
+                <InputWithAddonAfter name="lpr" type="digit" maxlength={10} addonText="%" initialValue="4.3" />
+              </ListItem>
+              <ListItem label="基点（‱）">
+                <InputWithAddonAfter name="addPoint" type="number" maxlength={10} addonText="‱" initialValue="0" />
+              </ListItem>
+            </View>
+          ) : (
+            <View key={randomKey}>
+              <ListItem label="商业贷款利率（%）">
+                <InputWithAddonAfter name="businessRate" type="digit" maxlength={10} addonText="%" initialValue="4.9" />
+              </ListItem>
+              <ListItem label="贷款利率折扣（倍）">
+                <InputWithAddonAfter name="multiple" type="digit" maxlength={10} addonText="倍" initialValue="1.0" />
+              </ListItem>
+            </View>
+          )}
+          <ListItem label="贷款方式">
+            <SwitchTab tabList={['等额本息', '等额本金']} size="small" active={loanType} onClick={handleChangeLoanType} />
+          </ListItem>
+          <Button formType="submit" className="submitBtn">
+            计算
+          </Button>
+        </Form>
+      )}
+      {activeLoanTab === 2 && (
+        <Form onSubmit={handleSubmit} className="formCon">
+          <ListItem label="公积金贷款金额（万元）">
+            <InputWithAddonAfter focus name="loanMoney1" type="digit" maxlength={15} addonText="万元" />
+          </ListItem>
+          <ListItem label="公积金贷款利率（%）">
+            <InputWithAddonAfter name="businessRate1" type="digit" maxlength={10} addonText="%" initialValue="3.25" />
+          </ListItem>
+          <ListItem label="商业贷款金额（万元）">
+            <InputWithAddonAfter focus name="loanMoney" type="digit" maxlength={15} addonText="万元" />
+          </ListItem>
+          <ListItem label="商业贷款利率方式">
+            <SwitchTab tabList={['LPR', '基准利率']} size="small" active={rateType} onClick={handleChangeRateType} />
+          </ListItem>
+          {rateType === 0 ? (
+            <View key={randomKey}>
+              <ListItem label="LPR（%）">
+                <InputWithAddonAfter name="lpr" type="digit" maxlength={10} addonText="%" initialValue="4.3" />
+              </ListItem>
+              <ListItem label="基点（‱）">
+                <InputWithAddonAfter name="addPoint" type="number" maxlength={10} addonText="‱" initialValue="0" />
+              </ListItem>
+            </View>
+          ) : (
+            <View key={randomKey}>
+              <ListItem label="商业贷款利率（%）">
+                <InputWithAddonAfter name="businessRate" type="digit" maxlength={10} addonText="%" initialValue="4.9" />
+              </ListItem>
+              <ListItem label="贷款利率折扣（倍）">
+                <InputWithAddonAfter name="multiple" type="digit" maxlength={10} addonText="倍" initialValue="1.0" />
+              </ListItem>
+            </View>
+          )}
+          <ListItem label="贷款年限（年）">
+            <InputWithAddonAfter name="loanYear" type="digit" maxlength={10} addonText="年" />
+          </ListItem>
+          <ListItem label="贷款方式">
+            <SwitchTab tabList={['等额本息', '等额本金']} size="small" active={loanType} onClick={handleChangeLoanType} />
+          </ListItem>
+          <Button formType="submit" className="submitBtn">
+            计算
+          </Button>
+        </Form>
+      )}
     </View>
   );
 };

@@ -1,4 +1,4 @@
 export default {
-  navigationBarTitleText: 'Taro-hooks',
+  navigationBarTitleText: '房贷计算器',
   enableShareAppMessage: true,
 };
