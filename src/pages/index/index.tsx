@@ -85,6 +85,12 @@ const Index = () => {
     });
   };
 
+  const handleToRateTable = () => {
+    Taro.navigateTo({
+      url: `/pages/rateTable/index`,
+    });
+  };
+
   return (
     <View className="wrapper">
       <View className="tabCon">
@@ -178,6 +184,11 @@ const Index = () => {
           </Button>
         </Form>
       )}
+      <View className="bottomBtn">
+        <Text className="btnText" onClick={handleToRateTable}>
+          房贷年利率表
+        </Text>
+      </View>
     </View>
   );
 };
