@@ -1,4 +1,4 @@
 export default {
-  navigationBarTitleText: '房贷计算器',
+  navigationBarTitleText: '月供计算器',
   enableShareAppMessage: true,
 };

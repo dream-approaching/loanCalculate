@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { View, Text, Input } from '@tarojs/components';
+
 import './index.less';
 
 type Props = {
@@ -25,13 +27,13 @@ const SwitchTab = ({ tabList, size = 'large', active = 0, onClick, style }: Prop
   };
 
   return (
-    <div className="tab-list" style={style}>
+    <View className="tab-list" style={style}>
       {tabList.map((item, index) => (
-        <div className={`tab-item ${activeTab === index ? 'active' : ''} ${size === 'small' ? 'small' : ''}`} key={index} onClick={() => handleClick(index)}>
+        <View className={`tab-item ${activeTab === index ? 'active' : ''} ${size === 'small' ? 'small' : ''}`} key={index} onClick={() => handleClick(index)}>
           {item}
-        </div>
+        </View>
       ))}
-    </div>
+    </View>
   );
 };
 

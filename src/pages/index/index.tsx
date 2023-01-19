@@ -1,13 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import Taro from '@tarojs/taro';
-import { View, Text, Button, Form, Input } from '@tarojs/components';
+import { View, Text, Button, Form } from '@tarojs/components';
 import type { CommonEvent } from '@tarojs/components/types/common';
 import type { FormProps } from '@tarojs/components/types/Form';
 import { ListItem, SwitchTab, InputWithAddonAfter } from '../../components';
 import './index.less';
 
 const Index = () => {
-  const loanTabList = ['商业贷款', '公积金贷款', '组合贷款'];
+  const loanTabList = ['商业', '公积金', '组合'];
   const [activeLoanTab, setActiveLoanTab] = useState(0);
 
   const handleClickTab = (index: number) => {

@@ -1,14 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import Taro, { useRouter } from '@tarojs/taro';
-import { View, Text, Button, Form, Input } from '@tarojs/components';
-import type { CommonEvent } from '@tarojs/components/types/common';
-import type { FormProps } from '@tarojs/components/types/Form';
-import { useEnv, useNavigationBar, useModal, useToast } from 'taro-hooks';
-import logo from './hook.png';
-import { useGetLoanDetail } from '../../hooks';
-import { LOAN_TYPE } from '../../constants';
-import { ListItem, SwitchTab, InputWithAddonAfter } from '../../components';
-import { BenJinType, DetailByMonth } from '../../types';
+import { View, Text } from '@tarojs/components';
 import './index.less';
 
 const table1 = [
