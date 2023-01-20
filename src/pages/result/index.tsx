@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import Taro, { useRouter } from '@tarojs/taro';
-import { View, Text, Button, Form, Input } from '@tarojs/components';
-import type { CommonEvent } from '@tarojs/components/types/common';
-import type { FormProps } from '@tarojs/components/types/Form';
-import { useEnv, useNavigationBar, useModal, useToast } from 'taro-hooks';
-import logo from './hook.png';
+import { View, Text } from '@tarojs/components';
 import { useGetLoanDetail } from '../../hooks';
 import { LOAN_TYPE } from '../../constants';
-import { ListItem, SwitchTab, InputWithAddonAfter } from '../../components';
-import { BenJinType, DetailByMonth } from '../../types';
+import { ListItem } from '../../components';
+import { DetailByMonth } from '../../types';
 import './index.less';
 
 const Result = () => {
@@ -26,6 +22,14 @@ const Result = () => {
       updateLoanInfo({ loanType, loanYear, loanRate, loanMoney } as any);
     }
   }, []);
+
+  useEffect(() => {
+    if (!totalNeed) {
+      Taro.showLoading({ title: '计算中...' });
+    } else {
+      Taro.hideLoading();
+    }
+  }, [totalNeed]);
 
   return (
     <View className="wrapper">

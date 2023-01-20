@@ -43,7 +43,6 @@ const useGetLoanDetail = () => {
 
       // 计算总还款金额
       setTotalNeed(+interest + +loanMoney);
-
       return {
         perMonthNeed: result,
         loanListByMonth: list,

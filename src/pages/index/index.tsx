@@ -102,7 +102,7 @@ const Index = () => {
             <InputWithAddonAfter focus name="loanMoney" type="digit" maxlength={15} addonText="万元" />
           </ListItem>
           <ListItem label="贷款年限（年）">
-            <InputWithAddonAfter name="loanYear" type="digit" maxlength={10} addonText="年" />
+            <InputWithAddonAfter name="loanYear" type="digit" maxlength={2} addonText="年" />
           </ListItem>
           {activeLoanTab !== 1 && (
             <ListItem label="利率方式">
@@ -149,7 +149,7 @@ const Index = () => {
             <InputWithAddonAfter name="businessRate1" type="digit" maxlength={10} addonText="%" initialValue="3.25" />
           </ListItem>
           <ListItem label="商业贷款金额（万元）">
-            <InputWithAddonAfter focus name="loanMoney" type="digit" maxlength={15} addonText="万元" />
+            <InputWithAddonAfter name="loanMoney" type="digit" maxlength={15} addonText="万元" />
           </ListItem>
           <ListItem label="商业贷款利率方式">
             <SwitchTab tabList={['LPR', '基准利率']} size="small" active={rateType} onClick={handleChangeRateType} />
@@ -174,7 +174,7 @@ const Index = () => {
             </View>
           )}
           <ListItem label="贷款年限（年）">
-            <InputWithAddonAfter name="loanYear" type="digit" maxlength={10} addonText="年" />
+            <InputWithAddonAfter name="loanYear" type="digit" maxlength={2} addonText="年" />
           </ListItem>
           <ListItem label="贷款方式">
             <SwitchTab tabList={['等额本息', '等额本金']} size="small" active={loanType} onClick={handleChangeLoanType} />

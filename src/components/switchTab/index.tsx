@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Input } from '@tarojs/components';
+import { View } from '@tarojs/components';
 
 import './index.less';
 
